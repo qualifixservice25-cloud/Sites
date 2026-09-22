@@ -17,10 +17,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del branch del sito
+      - name: Checkout del branch del sito (root del workspace)
         uses: actions/checkout@v4
-        with:
-          path: site
 
       - name: Checkout della pagina indice (branch main)
         uses: actions/checkout@v4
@@ -35,7 +33,7 @@ jobs:
       - name: Deploy del sito nella sua sottocartella
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: site
+          folder: .
           target-folder: ${{ env.BRANCH_NAME }}
           branch: gh-pages
           clean: true
