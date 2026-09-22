@@ -1,0 +1,48 @@
+name: Deploy Multi-Branch to GitHub Pages
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - gh-pages
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del branch del sito
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Checkout della pagina indice (branch main)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: hub
+
+      - name: Estrai il nome del branch
+        shell: bash
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> "$GITHUB_ENV"
+
+      - name: Deploy del sito nella sua sottocartella
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: site
+          target-folder: ${{ env.BRANCH_NAME }}
+          branch: gh-pages
+          clean: true
+
+      - name: Deploy della pagina indice in root
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: hub
+          branch: gh-pages
+          clean: false
